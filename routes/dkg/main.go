@@ -30,6 +30,7 @@ type RunDKGRequest struct {
 	Nonce         int            `json:"nonce"`
 	WithdrawAddr  string         `json:"withdrawAddr"`
 	Network       string         `json:"network"`
+	Expiry        int            `json:"expiry"`
 }
 
 type Response struct {
@@ -79,8 +80,14 @@ func (d *DKGHandler) RunDKGHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	// make sure d.Req.Expiry is not 0 if so make it 15 minutes
+	if d.Req.Expiry == 0 || d.Req.Expiry < 0 {
+		d.Req.Expiry = 15
+	}
+	exprires := time.Now().Add(time.Duration(d.Req.Expiry) * time.Minute)
 
-	d.ScheduleFileDeletion(time.Now().Add(20 * time.Second))
+	d.ScheduleFileDeletion(exprires)
+	res.Expiration = exprires.Format(time.RFC3339)
 
 	w.Header().Set("Content-Type", "application/json")
 
