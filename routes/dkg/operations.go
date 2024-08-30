@@ -17,8 +17,9 @@ type (
 		URL  string `json:"url"`
 	}
 	RunDKGResponse struct {
-		File      FileInfo `json:"file"`
-		SessionID string   `json:"sessionId"`
+		File       FileInfo `json:"file"`
+		SessionID  string   `json:"sessionId"`
+		Expiration string   `json:"expiration"`
 	}
 )
 
@@ -90,11 +91,13 @@ func (d *DKGHandler) SaveFiles() (*RunDKGResponse, error) {
 
 	// make sure the file is a directory not a file
 	var ceremonyDir string
+	var finalName string
 
 	for _, file := range ceremonyFiles {
 		if file.IsDir() {
 			// check if the directory starts with "ceremony-"
 			if strings.HasPrefix(file.Name(), "ceremony-") {
+				finalName = file.Name() + ".zip"
 				ceremonyDir = filepath.Join(outputDir, file.Name())
 				break
 			}
@@ -118,7 +121,6 @@ func (d *DKGHandler) SaveFiles() (*RunDKGResponse, error) {
 
 	// get the absolute path of the ceremony zip -> /home...
 	ceremonyZipAbsPath, err := filepath.Abs(ceremonyZip)
-
 	if err != nil {
 		return nil, fmt.Errorf("could not get the absolute path of the ceremony zip: %s", err)
 	}
@@ -126,7 +128,7 @@ func (d *DKGHandler) SaveFiles() (*RunDKGResponse, error) {
 	res := &RunDKGResponse{
 		SessionID: d.SessionID,
 		File: FileInfo{
-			Name: "ceremony.zip",
+			Name: finalName,
 			URL:  ceremonyZipAbsPath,
 		},
 	}
