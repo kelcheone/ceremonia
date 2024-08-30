@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 
 	dkgHandler "github.com/kelcheone/ceremonia/routes/dkg"
 )
@@ -17,7 +18,13 @@ func main() {
 	r.HandleFunc("/api/get-file/{sessionId}", dkgHandler.ServeGeneratedFiles).Methods("GET")
 
 	port := ":8090"
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+	})
 
-	log.Printf("Running server on port: %s\n", port)
-	log.Fatal(http.ListenAndServe(port, r))
+	gHandler := c.Handler(r)
+
+	log.Printf("Running server on port %s\n", port)
+	log.Fatal(http.ListenAndServe(port, gHandler))
 }
