@@ -1,0 +1,3 @@
+dkg-api.kelche.co {
+    reverse_proxy localhost:8090
+}

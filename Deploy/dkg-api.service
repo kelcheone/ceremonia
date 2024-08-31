@@ -1,0 +1,14 @@
+[Unit]
+Description=Run DKG Ceremonies API
+After=network.target
+
+[Service]
+ExecStart=/home/kelche/ceremonia/bin/dkg-api
+WorkingDirectory=/home/kelche/ceremonia
+Restart=always
+RestartSec=5
+User=kelche
+Group=kelche
+
+[Install]
+WantedBy=multi-user.target
