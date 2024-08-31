@@ -16,6 +16,11 @@ func main() {
 	dkgHandler := dkgHandler.DKGHandler{}
 	r.HandleFunc("/api/run-dkg", dkgHandler.RunDKGHandler).Methods("POST")
 	r.HandleFunc("/api/get-file/{sessionId}", dkgHandler.ServeGeneratedFiles).Methods("GET")
+	// health check
+	r.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	}).Methods("GET")
 
 	port := ":8090"
 	c := cors.New(cors.Options{
