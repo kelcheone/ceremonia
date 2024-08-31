@@ -46,13 +46,12 @@ cd Deploy
 make install_go
 ```
 
-### 2. Download and Install the Binary
+### 2. Download and Install the SSV-DKG Binary
 
 Download the binary and make it executable:
 
 ```sh
-make download
-make install
+make all_ssv_dkg
 ```
 
 ### 3. Build the DKG API Binary

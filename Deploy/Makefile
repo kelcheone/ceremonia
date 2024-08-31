@@ -4,7 +4,6 @@ BINARY_NAME = ssv-dkg
 INSTALL_DIR = /usr/local/bin
 DOWNLOAD_DIR = /tmp
 GO_VERSION = 1.22.0
-# source code to run the api is round in the outer directory
 SOURCE_CODE = ../ 
 #help
 
@@ -15,13 +14,14 @@ help:
 	@echo "Targets:"
 	@echo "  help       Display this help message"
 	@echo "  install_go Install Go $(GO_VERSION)"
-	@echo "  download   Download the binary"
-	@echo "  install    Make the binary executable"
-	@echo "  test       Test the installation"
-	@echo "  clean      Clean up"
-	@echo "  uninstall  Uninstall the binary"
+	@echo "  download   Download the ssv-dkg binary"
+	@echo "  install_ssv_dkg   Make the ssv-dkg binary executable"
+	@echo "  test_ssv_dkg       Test the installation"
+	@echo "  clean_ssv_dkg      Clean up"
+	@echo "  uninstall_ssv_dkg  Uninstall the ssv-dkg binary"
 	@echo "  all_ssv_dkg  Download, install, test, and clean up the binary"
 	@echo "  all_dkg_api  Install Go, install dependencies, build the binary"
+	
 
 
 .PHONY: install_go
@@ -43,39 +43,39 @@ test_go:
 	@echo "GOROOT: $(shell go env GOROOT)"
 
 # Download the binary
-.PHONY: download
+.PHONY: download_ssv_dkg
 download:
 	@echo "Downloading $(BINARY_NAME)..."
 	@curl -L $(BINARY_URL) -o $(DOWNLOAD_DIR)/$(BINARY_NAME)
 
 # Make the binary executable
-.PHONY: install
-install: 
+.PHONY: install_ssv_dkg
+install_ssv_dkg: 
 	@echo "Making $(BINARY_NAME) executable..."
 	@chmod +x $(DOWNLOAD_DIR)/$(BINARY_NAME)
 	@echo "Moving $(BINARY_NAME) to $(INSTALL_DIR)..."
 	@sudo mv $(DOWNLOAD_DIR)/$(BINARY_NAME) $(INSTALL_DIR)/$(BINARY_NAME)
 
 # Test the installation
-.PHONY: test
-test: 
+.PHONY: test_ssv_dkg
+test_ssv_dkg:
 	@echo "Testing $(BINARY_NAME) installation..."
 	@$(BINARY_NAME) -v
 
 # Clean up
-.PHONY: clean
-clean:
+.PHONY: clean_ssv_dkg
+clean_ssv_dkg:
 	@echo "Cleaning up..."
 	@rm -f $(DOWNLOAD_DIR)/$(BINARY_NAME)
 
 # Uninstall the binary
-.PHONY: uninstall
-uninstall:
+.PHONY: uninstall_ssv_dkg
+uninstall_ssv_dkg:
 	@echo "Uninstalling $(BINARY_NAME)..."
 	@sudo rm -f $(INSTALL_DIR)/$(BINARY_NAME)
 
 .PHONY: all_ssv_dkg
-all_ssv_dkg: download install test clean
+all_ssv_dkg: download_ssv_dkg install_ssv_dkg test_ssv_dkg clean_ssv_dkg
 
 
 .PHONY: all_dkg_api
