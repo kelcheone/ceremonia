@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { Operator } from "@/types/types";
-import Image from "next/image";
+import { GenerateKeysResponse, Operator } from "@/types/types";
 import ShowSelectedOperators from "./ShowSelectedOperators";
+import { Trash } from "lucide-react";
+import useFileStore from "@/stores/fileStore";
 
 interface FileCardProps {
   sessionId: string;
@@ -35,6 +36,19 @@ const FileCard: React.FC<FileCardProps> = ({
     total: number;
   }>({ days: 0, hours: 0, minutes: 0, seconds: 0, total: 0 });
 
+  const removeFile = useFileStore((state) => state.removeFile);
+  const deleteFile = () => {
+    const key = `dkg-${sessionId}`;
+    localStorage.removeItem(key);
+    removeFile({
+      sessionId,
+      file,
+      selectedOperators,
+      expiration: expiry,
+      date: "",
+    });
+  };
+
   useEffect(() => {
     const calculateTimeLeft = () => {
       const now = new Date().getTime();
@@ -44,7 +58,7 @@ const FileCard: React.FC<FileCardProps> = ({
         return {
           days: Math.floor(distance / (1000 * 60 * 60 * 24)),
           hours: Math.floor(
-            (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+            (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
           ),
           minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
           seconds: Math.floor((distance % (1000 * 60)) / 1000),
@@ -65,6 +79,12 @@ const FileCard: React.FC<FileCardProps> = ({
   return (
     <Card className="flex flex-col">
       <CardContent className="flex flex-col items-center justify-between p-6 h-full">
+        <div className="flex justify-end w-full">
+          <Trash
+            className="h-6 w-6 text-muted-foreground cursor-pointer hover:text-destructive"
+            onClick={deleteFile}
+          />
+        </div>
         <div className="flex items-center mb-4 w-full">
           <FolderArchive className="h-12 w-12 text-primary mr-4 flex-shrink-0" />
           <span className="text-lg font-medium truncate">{file.name}</span>

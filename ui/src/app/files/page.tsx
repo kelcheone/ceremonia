@@ -5,9 +5,12 @@ import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import MapFiles from "@/components/MapFiles";
 import Head from "next/head";
+import { useGetFiles } from "@/hooks/useFiles";
 
 export default function Page() {
   const router = useRouter();
+
+  useGetFiles();
 
   return (
     <>

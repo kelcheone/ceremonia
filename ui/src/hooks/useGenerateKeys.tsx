@@ -4,7 +4,6 @@ import {
   OperatorInfo,
   RequestValues,
 } from "@/types/types";
-import { useGeneratorStore } from "@/stores/generatorStore";
 import { useAccount } from "wagmi";
 import useOperatorsStore from "@/stores/operatorsStore";
 import { useState } from "react";
@@ -14,9 +13,8 @@ export function useGenerateKeys() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const { address, chain } = useAccount();
-  const FormData = useGeneratorStore((state) => state.FormData);
   const selectedOperators = useOperatorsStore(
-    (state) => state.selectedOperators,
+    (state) => state.selectedOperators
   );
   const { setError, setSuccess } = useGlobalStore();
 
@@ -120,36 +118,4 @@ export function useGenerateKeys() {
   };
 
   return { generateKeys, isLoading };
-}
-
-//get the data from local storage
-export function getKeysData() {
-  if (typeof window === "undefined") {
-    return [];
-  }
-  // get all the keys from local storage: they start with dkg-
-  const keys = Object.keys(localStorage).filter((key) =>
-    key.startsWith("dkg-"),
-  );
-  let data = keys.map((key) => {
-    return JSON.parse(localStorage.getItem(key) || "");
-  });
-  // check if the data has exceeded the expiration date (timestamp)
-  const now = new Date().getTime();
-  //remove the expired data from local storage
-  data = data.filter((item) => {
-    const expirationTime = new Date(item.expiration).getTime();
-    if (expirationTime < now) {
-      localStorage.removeItem(item.sessionId);
-      return false;
-    }
-    return expirationTime > now;
-  });
-
-  // sort the data by date newest first
-  data.sort((a, b) => {
-    return new Date(b.date).getTime() - new Date(a.date).getTime();
-  });
-
-  return data as GenerateKeysResponse[];
 }
