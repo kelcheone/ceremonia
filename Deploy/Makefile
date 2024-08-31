@@ -81,7 +81,7 @@ all_ssv_dkg: download install test clean
 .PHONY: all_dkg_api
 all_dkg_api: install_go 
 	# cd into source code directory and install dependencies
-	cd $(SOURCE_CODE) && go mod download && make install && go build -o ./bin/dkg-api main.go
+	cd $(SOURCE_CODE) && go mod download && go build -o ./bin/dkg-api main.go
 	@echo "Finished building the binary"
 
 
