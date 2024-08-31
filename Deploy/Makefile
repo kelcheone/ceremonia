@@ -1,58 +1,89 @@
 # Variables
-REPO_URL = git@github.com:kelcheone/ssv-dkg.git
-REPO_DIR = ssv-dkg
-INSTALL_DIR = /usr/local/bin
+BINARY_URL = https://github.com/kelcheone/ssv-dkg/releases/download/v2.1.0/ssv-dkg
 BINARY_NAME = ssv-dkg
-BINARY_PATH = $(REPO_DIR)/bin/$(BINARY_NAME)
+INSTALL_DIR = /usr/local/bin
+DOWNLOAD_DIR = /tmp
+GO_VERSION = 1.22.0
+# source code to run the api is round in the outer directory
+SOURCE_CODE = ../ 
+#help
 
-# Default target
-all: clone install build move test
+.PHONY: help
+help:
+	@echo "Usage: make [target]"
+	@echo ""
+	@echo "Targets:"
+	@echo "  help       Display this help message"
+	@echo "  install_go Install Go $(GO_VERSION)"
+	@echo "  download   Download the binary"
+	@echo "  install    Make the binary executable"
+	@echo "  test       Test the installation"
+	@echo "  clean      Clean up"
+	@echo "  uninstall  Uninstall the binary"
+	@echo "  all_ssv_dkg  Download, install, test, and clean up the binary"
+	@echo "  all_dkg_api  Install Go, install dependencies, build the binary"
 
-# Clone the repository
-clone:
-	@if [ ! -d "$(REPO_DIR)" ]; then \
-		git clone $(REPO_URL); \
-	else \
-		echo "$(REPO_DIR) already exists."; \
-	fi
 
-# Run make install
-install:
-	@cd $(REPO_DIR) && make install
+.PHONY: install_go
+install_go:
+	@echo "Installing Go $(GO_VERSION)..."
+	@curl -L https://golang.org/dl/go$(GO_VERSION).linux-amd64.tar.gz -o /tmp/go$(GO_VERSION).linux-amd64.tar.gz
+	@sudo tar -C /usr/local -xzf /tmp/go$(GO_VERSION).linux-amd64.tar.gz
+	@echo "export PATH=\$$PATH:/usr/local/go/bin" >> ~/.bashrc
+	@echo "export GOPATH=\$$HOME/go" >> ~/.bashrc
+	@echo "export PATH=\$$PATH:\$$GOPATH/bin" >> ~/.bashrc
+	@. ~/.bashrc
+	@rm -f /tmp/go$(GO_VERSION).linux-amd64.tar.gz
 
-# Run make build
-build:
-	@cd $(REPO_DIR) && make build
+.PHONY: test_go
+test_go:
+	@echo "Testing Go installation..."
+	@echo "go version: $(shell go version)"
+	@echo "GOPATH: $(shell go env GOPATH)"
+	@echo "GOROOT: $(shell go env GOROOT)"
 
-# Move the binary to the global path
-move:
-	@if [ -f "$(BINARY_PATH)" ]; then \
-		sudo mv $(BINARY_PATH) $(INSTALL_DIR)/$(BINARY_NAME); \
-		echo "$(BINARY_NAME) has been moved to $(INSTALL_DIR)."; \
-	else \
-		echo "Binary not found in $(BINARY_PATH). Build might have failed."; \
-	fi
+# Download the binary
+.PHONY: download
+download:
+	@echo "Downloading $(BINARY_NAME)..."
+	@curl -L $(BINARY_URL) -o $(DOWNLOAD_DIR)/$(BINARY_NAME)
+
+# Make the binary executable
+.PHONY: install
+install: 
+	@echo "Making $(BINARY_NAME) executable..."
+	@chmod +x $(DOWNLOAD_DIR)/$(BINARY_NAME)
+	@echo "Moving $(BINARY_NAME) to $(INSTALL_DIR)..."
+	@sudo mv $(DOWNLOAD_DIR)/$(BINARY_NAME) $(INSTALL_DIR)/$(BINARY_NAME)
+
+# Test the installation
+.PHONY: test
+test: 
+	@echo "Testing $(BINARY_NAME) installation..."
+	@$(BINARY_NAME) -v
 
 # Clean up
+.PHONY: clean
 clean:
-	@rm -rf $(REPO_DIR)
-	@echo "Cleaned up $(REPO_DIR)."
+	@echo "Cleaning up..."
+	@rm -f $(DOWNLOAD_DIR)/$(BINARY_NAME)
 
-# Test if the binary is available globally by running ssv-dkg -v
-test:
-	@if command -v $(BINARY_NAME) &> /dev/null; then \
-		echo "$(BINARY_NAME) is installed. Running '$(BINARY_NAME) -v' to check version:"; \
-		$(BINARY_NAME) -v; \
-	else \
-		echo "$(BINARY_NAME) is not installed or not found in the PATH."; \
-	fi
+# Uninstall the binary
+.PHONY: uninstall
+uninstall:
+	@echo "Uninstalling $(BINARY_NAME)..."
+	@sudo rm -f $(INSTALL_DIR)/$(BINARY_NAME)
 
-# Check if the binary is available globally
-check:
-	@if command -v $(BINARY_NAME) &> /dev/null; then \
-		echo "$(BINARY_NAME) is available globally."; \
-	else \
-		echo "There was an issue installing $(BINARY_NAME)."; \
-	fi
+.PHONY: all_ssv_dkg
+all_ssv_dkg: download install test clean
 
-.PHONY: all clone install build move clean test check
+
+.PHONY: all_dkg_api
+all_dkg_api: install_go 
+	# cd into source code directory and install dependencies
+	cd $(SOURCE_CODE) && go mod download && make install && go build -o ./bin/dkg-api main.go
+	@echo "Finished building the binary"
+
+
+
+
