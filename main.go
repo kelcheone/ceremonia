@@ -13,9 +13,16 @@ import (
 func main() {
 	r := mux.NewRouter()
 
-	dkgHandler := dkgHandler.DKGHandler{}
-	r.HandleFunc("/api/run-dkg", dkgHandler.RunDKGHandler).Methods("POST")
-	r.HandleFunc("/api/get-file/{sessionId}", dkgHandler.ServeGeneratedFiles).Methods("GET")
+	r.HandleFunc("/api/run-dkg", func(w http.ResponseWriter, r *http.Request) {
+		handler := &dkgHandler.DKGHandler{}
+		handler.RunDKGHandler(w, r)
+	}).Methods("POST")
+
+	r.HandleFunc("/api/get-file/{sessionId}", func(w http.ResponseWriter, r *http.Request) {
+		handler := &dkgHandler.DKGHandler{}
+		handler.ServeGeneratedFiles(w, r)
+	}).Methods("GET")
+
 	// health check
 	r.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
