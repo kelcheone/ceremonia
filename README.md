@@ -114,6 +114,8 @@ You can test the API endpoints using tools like `curl` or Postman. The main endp
 - `GET /api/get-file/{sessionId}` - Retrieves generated files.
 - `GET /api/health` - Health check endpoint.
 
+If you have the Bruno api client, you can load the collection provided in [bruno-dkg-client-api](bruno-dkg-client-api) and test the endpoints.
+
 Example `curl` command to run the DKG ceremony:
 
 ```sh
