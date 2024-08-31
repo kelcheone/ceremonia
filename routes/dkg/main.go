@@ -70,7 +70,7 @@ func (d *DKGHandler) RunDKGHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = d.runCommand(); err != nil {
+	if err = d.RunCommand(); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

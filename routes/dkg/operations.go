@@ -43,7 +43,7 @@ func (d *DKGHandler) constructArgs() error {
 	return nil
 }
 
-func (d DKGHandler) runCommand() error {
+func (d DKGHandler) RunCommand() error {
 	base := "ssv-dkg init"
 	command := fmt.Sprintf("%s %s", base, d.CommandArgs)
 	fmt.Println(command)
@@ -108,10 +108,7 @@ func (d *DKGHandler) SaveFiles() (*RunDKGResponse, error) {
 		return nil, fmt.Errorf("no ceremony directory found")
 	}
 
-	ceremonyDirPath, err := filepath.Abs(ceremonyDir)
-	if err != nil {
-		return nil, fmt.Errorf("could not get the absolute path of the ceremony directory: %s", err)
-	}
+	ceremonyDirPath := filepath.Join(ceremonyDir)
 
 	// zip the files in ceremonyDir
 	ceremonyZip := filepath.Join(outputDir, "ceremony.zip")
@@ -119,17 +116,11 @@ func (d *DKGHandler) SaveFiles() (*RunDKGResponse, error) {
 		return nil, fmt.Errorf("could not zip the ceremony files: %s", err)
 	}
 
-	// get the absolute path of the ceremony zip -> /home...
-	ceremonyZipAbsPath, err := filepath.Abs(ceremonyZip)
-	if err != nil {
-		return nil, fmt.Errorf("could not get the absolute path of the ceremony zip: %s", err)
-	}
-
 	res := &RunDKGResponse{
 		SessionID: d.SessionID,
 		File: FileInfo{
 			Name: finalName,
-			URL:  ceremonyZipAbsPath,
+			URL:  ceremonyZip,
 		},
 	}
 
