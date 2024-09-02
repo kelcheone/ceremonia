@@ -79,5 +79,10 @@ func DeleteFiles(sessionID string) error {
 	if err := os.RemoveAll(configDir); err != nil {
 		return fmt.Errorf("could not delete the config directory: %s", err)
 	}
+	// remove the initiator log file "./initiator_logs/sessionID.log"
+	logFile := filepath.Join("initiator_logs", sessionID+".log")
+	if err := os.Remove(logFile); err != nil {
+		return fmt.Errorf("could not delete the log file: %s", err)
+	}
 	return nil
 }
