@@ -38,9 +38,9 @@ export default function useFetchNextPage() {
       });
       // filter repeated operators
       const filteredOperators = newOperators.filter(
-        (nOperator) =>
-          !operators.find((operator) => operator.id === nOperator.id),
+        (operator) => !operators.some((op) => op.id === operator.id)
       );
+
       //dived the fee by 1e12 to get the yearly fee
       filteredOperators.forEach((operator) => {
         operator.fee = (parseFloat(operator.fee) / 1e12).toFixed(2);

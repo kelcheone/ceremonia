@@ -17,7 +17,7 @@ export default function useFetchInit() {
     filters: { verified: boolean; dkgEnabled: boolean } = {
       verified: false,
       dkgEnabled: false,
-    },
+    }
   ) => {
     setIsLoading(true);
     let url = `https://api.ssv.network/api/v4/${network}/operators?perPage=20`;
@@ -34,16 +34,14 @@ export default function useFetchInit() {
       operators.forEach((operator) => {
         operator.fee = (parseFloat(operator.fee) / 1e12).toFixed(2);
       });
-      // if ip is http remove the operator
-      operators.forEach((operator) => {
-        if (operator.dkg_address.startsWith("http://")) {
-          operators.splice(operators.indexOf(operator), 1);
-        }
-      });
+      // if ip is http:// not https:// remove the operator
+      const filteredOperators = operators.filter(
+        (operator) => !operator.dkg_address.startsWith("http://")
+      );
 
-      setOperators(operators);
+      setOperators(filteredOperators);
       setIsLoading(false);
-      return operators;
+      return filteredOperators;
     } catch (error) {
       throw new Error("Error fetching operators");
     }
