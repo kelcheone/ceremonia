@@ -14,15 +14,15 @@ type SelectedOperatorsProps = {
 const SelectedOperators: FC<SelectedOperatorsProps> = ({ clusterSize }) => {
   const router = useRouter();
   const selectedOperators = useOperatorsStore(
-    (state) => state.selectedOperators,
+    (state) => state.selectedOperators
   );
   const setSelectedOperators = useOperatorsStore(
-    (state) => state.setSelectedOperators,
+    (state) => state.setSelectedOperators
   );
   const onOperatorSelect = (operator: Operator) => {
     if (selectedOperators.find((op) => op.id === operator.id)) {
       setSelectedOperators(
-        selectedOperators.filter((op) => op.id !== operator.id),
+        selectedOperators.filter((op) => op.id !== operator.id)
       );
     } else if (selectedOperators.length < clusterSize) {
       setSelectedOperators([...selectedOperators, operator]);
@@ -46,7 +46,10 @@ const SelectedOperators: FC<SelectedOperatorsProps> = ({ clusterSize }) => {
               key={operator.id}
               className={`flex justify-between items-center
                          ${
-                           operator.dkg_address === "" ? "bg-red-400/50 " : ""
+                           operator.dkg_address === "" ||
+                           operator.dkg_address.startsWith("http://")
+                             ? "bg-red-400/50 "
+                             : ""
                          } bg-muted/50
                           rounded-lg p-3`}
             >
@@ -91,10 +94,16 @@ const SelectedOperators: FC<SelectedOperatorsProps> = ({ clusterSize }) => {
             Total Yearly Fee: {totalYearlyFee} SSV
           </div>
           {selectedOperators.some(
-            (op) => !(op.type === "verified_operator"),
+            (op) => !(op.type === "verified_operator") || operatorUsesHTTP(op)
           ) && (
             <div className="mt-4 bg-yellow-100 border border-yellow-300 rounded p-3 text-sm dark:text-gray-900 ">
               You have selected one or more operators that are not verified.
+            </div>
+          )}
+          {selectedOperators.some((op) => operatorUsesHTTP(op)) && (
+            <div className="mt-4 bg-red-100 border border-red-300 rounded p-3 text-sm dark:text-gray-900 ">
+              You have selected one or more operators that use HTTP. This is not
+              secure.
             </div>
           )}
         </div>
@@ -115,3 +124,8 @@ const SelectedOperators: FC<SelectedOperatorsProps> = ({ clusterSize }) => {
 };
 
 export default SelectedOperators;
+
+function operatorUsesHTTP(operator: Operator) {
+  // check if an operator uses HTTP not HTTPS
+  return operator.dkg_address.startsWith("http://");
+}
