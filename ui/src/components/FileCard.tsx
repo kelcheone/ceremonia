@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { GenerateKeysResponse, Operator } from "@/types/types";
+import { Operator } from "@/types/types";
 import ShowSelectedOperators from "./ShowSelectedOperators";
 import { Trash } from "lucide-react";
 import useFileStore from "@/stores/fileStore";
@@ -46,6 +46,7 @@ const FileCard: React.FC<FileCardProps> = ({
       selectedOperators,
       expiration: expiry,
       date: "",
+      message: "",
     });
   };
 
