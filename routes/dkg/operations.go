@@ -1,6 +1,7 @@
 package dkgHandler
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -22,6 +23,23 @@ type (
 		Expiration string   `json:"expiration"`
 	}
 )
+type LogMessage struct {
+	Level       string                 `json:"L"`
+	Timestamp   string                 `json:"T"`
+	Name        string                 `json:"N,omitempty"`
+	Message     string                 `json:"M"`
+	InitID      string                 `json:"init ID,omitempty"`
+	Operator    int                    `json:"operator,omitempty"`
+	Method      string                 `json:"method,omitempty"`
+	Error       string                 `json:"error,omitempty"`
+	LevelDetail string                 `json:"level,omitempty"`
+	Encoder     string                 `json:"encoder,omitempty"`
+	Format      string                 `json:"format,omitempty"`
+	FileOptions map[string]interface{} `json:"file_options,omitempty"`
+	Version     string                 `json:"Version,omitempty"`
+	PublicKey   string                 `json:"initiator public key,omitempty"`
+	OperatorIDs []int                  `json:"operator IDs,omitempty"`
+}
 
 func (d *DKGHandler) constructArgs() error {
 	configDir := filepath.Join("config", d.SessionID)
@@ -37,8 +55,8 @@ func (d *DKGHandler) constructArgs() error {
 		operatorIdsStr[i] = fmt.Sprintf("%d", id)
 	}
 	d.CommandArgs = fmt.Sprintf(
-		"--validators %d --operatorIDs %s --operatorsInfoPath %s --owner %s --nonce %d --withdrawAddress %s --network %s --outputPath %s --logLevel info --logFormat json --logLevelFormat capitalColor --logFilePath ./initiator_logs/debug.log",
-		d.Req.Validators, strings.Join(operatorIdsStr, ","), operatorsPath, d.Req.OwnerAddr, d.Req.Nonce, d.Req.WithdrawAddr, d.Req.Network, d.OutputDir,
+		"--validators %d --operatorIDs %s --operatorsInfoPath %s --owner %s --nonce %d --withdrawAddress %s --network %s --outputPath %s --logLevel debug --logFormat json --logLevelFormat capitalColor --logFilePath ./initiator_logs/%s.log",
+		d.Req.Validators, strings.Join(operatorIdsStr, ","), operatorsPath, d.Req.OwnerAddr, d.Req.Nonce, d.Req.WithdrawAddr, d.Req.Network, d.OutputDir, d.SessionID,
 	)
 	return nil
 }
@@ -48,14 +66,47 @@ func (d DKGHandler) RunCommand() error {
 	command := fmt.Sprintf("%s %s", base, d.CommandArgs)
 	fmt.Println(command)
 	cmd := exec.Command("sh", "-c", command)
-	fmt.Println("--------we are here -----------")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+
 	err := cmd.Run()
 	if err != nil {
 		return fmt.Errorf("could not run command: %s", err)
 	}
 	return nil
+}
+
+func (d *DKGHandler) CheckLogs() (string, error) {
+	logFilePath := filepath.Join("initiator_logs", fmt.Sprintf("%s.log", d.SessionID))
+	logFile, err := os.Open(logFilePath)
+	if err != nil {
+		return "", fmt.Errorf("could not open log file")
+	}
+
+	defer logFile.Close()
+
+	scanner := bufio.NewScanner(logFile)
+	// get the last line of the log file
+	var lastLine string
+	for scanner.Scan() {
+		lastLine = scanner.Text()
+	}
+
+	if err := scanner.Err(); err != nil {
+		return "", fmt.Errorf("could not read log file")
+	}
+
+	var logMessage LogMessage
+	err = json.Unmarshal([]byte(lastLine), &logMessage)
+
+	if err != nil {
+		return "", fmt.Errorf("could not unmarshal log message")
+	}
+
+	if logMessage.Error != "" {
+		return "", fmt.Errorf(logMessage.Error)
+	}
+	return logMessage.Message, nil
 }
 
 func writeToFile(dir string, data []OperatorInfo) (string, error) {
