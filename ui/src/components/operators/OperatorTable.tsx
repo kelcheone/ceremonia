@@ -32,12 +32,16 @@ const OperatorTable: FC<OperatorTableProps> = ({
   }, [inView]);
 
   const setSelectedOperators = useOperatorsStore(
-    (state) => state.setSelectedOperators,
+    (state) => state.setSelectedOperators
   );
   const onOperatorSelect = (operator: Operator) => {
+    //check if is private first
+    if (operator.is_private) {
+      return;
+    }
     if (selectedOperators.find((op) => op.id === operator.id)) {
       setSelectedOperators(
-        selectedOperators.filter((op) => op.id !== operator.id),
+        selectedOperators.filter((op) => op.id !== operator.id)
       );
     } else if (selectedOperators.length < clusterSize) {
       setSelectedOperators([...selectedOperators, operator]);
@@ -69,16 +73,18 @@ const OperatorTable: FC<OperatorTableProps> = ({
           {operators.map((operator) => (
             <tr
               key={operator.id}
-              className={
+              className={`${
                 selectedOperators.find((op) => op.id === operator.id)
                   ? "bg-primary/10"
+                  : operator.is_private
+                  ? "bg-red-200/50"
                   : "hover:bg-muted/50"
-              }
+              }`}
             >
               <td className="py-2 px-4 flex items-center gap-2">
                 <Checkbox
                   checked={selectedOperators.some(
-                    (op) => op.id === operator.id,
+                    (op) => op.id === operator.id
                   )}
                   onCheckedChange={() => onOperatorSelect(operator)}
                 />
@@ -120,14 +126,18 @@ const OperatorTable: FC<OperatorTableProps> = ({
                 )}
               </td>
               <td className="text-right px-4">
-                <button
-                  className="text-xs text-muted-foreground hover:text-primary"
-                  onClick={() => onOperatorSelect(operator)}
-                >
-                  {selectedOperators.find((op) => op.id === operator.id)
-                    ? "Remove"
-                    : "Select"}
-                </button>
+                {operator.is_private ? (
+                  <span className="text-xs text-muted-foreground">Private</span>
+                ) : (
+                  <button
+                    className="text-xs text-muted-foreground hover:text-primary"
+                    onClick={() => onOperatorSelect(operator)}
+                  >
+                    {selectedOperators.find((op) => op.id === operator.id)
+                      ? "Remove"
+                      : "Select"}
+                  </button>
+                )}
               </td>
             </tr>
           ))}

@@ -34,6 +34,7 @@ export interface Operator {
   is_valid: boolean;
   dkg_address: string;
   logo: string | undefined;
+  is_private: boolean;
 }
 
 export type GenerateKeysResponse = {

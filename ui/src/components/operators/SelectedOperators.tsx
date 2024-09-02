@@ -111,7 +111,9 @@ const SelectedOperators: FC<SelectedOperatorsProps> = ({ clusterSize }) => {
           <Button
             disabled={
               selectedOperators.length !== clusterSize ||
-              selectedOperators.some((op) => op.dkg_address === "")
+              selectedOperators.some(
+                (op) => op.dkg_address === "" || operatorUsesHTTP(op)
+              )
             }
             onClick={() => router.push("/join/generate")}
           >
