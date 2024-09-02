@@ -21,6 +21,7 @@ type (
 		File       FileInfo `json:"file"`
 		SessionID  string   `json:"sessionId"`
 		Expiration string   `json:"expiration"`
+		Message    string   `json:"message"`
 	}
 )
 type LogMessage struct {

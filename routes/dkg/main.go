@@ -64,6 +64,13 @@ func (d *DKGHandler) RunDKGHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// create sessionID's log file.
+	logFile := filepath.Join("initiator_logs", fmt.Sprintf("%s.log", d.SessionID))
+	if _, err := os.Create(logFile); err != nil {
+		http.Error(w, "Could not create log file", http.StatusInternalServerError)
+		return
+	}
+
 	err = d.constructArgs()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -71,6 +78,13 @@ func (d *DKGHandler) RunDKGHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err = d.RunCommand(); err != nil {
+		// check logs
+		_, lErr := d.CheckLogs()
+		if lErr != nil {
+			http.Error(w, lErr.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -88,6 +102,10 @@ func (d *DKGHandler) RunDKGHandler(w http.ResponseWriter, r *http.Request) {
 
 	d.ScheduleFileDeletion(exprires)
 	res.Expiration = exprires.Format(time.RFC3339)
+
+	logMessage, _ := d.CheckLogs()
+
+	res.Message = logMessage
 
 	w.Header().Set("Content-Type", "application/json")
 
