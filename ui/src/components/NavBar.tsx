@@ -10,6 +10,7 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { File, Folder } from "lucide-react";
+import NetworkSwitcher from "./NetworkSwitcher";
 
 function NavBar() {
   const pathname = usePathname();
@@ -44,6 +45,7 @@ function NavBar() {
         Files
       </NavLink>
       <div className="flex items-center gap-4">
+        <NetworkSwitcher />
         <ConnectWallet />
         <ModeToggle />
       </div>
