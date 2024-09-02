@@ -45,4 +45,5 @@ export type GenerateKeysResponse = {
   date: string;
   expiration: string;
   selectedOperators: Operator[];
+  message: string;
 };

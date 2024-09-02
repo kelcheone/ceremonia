@@ -9,6 +9,7 @@ import useOperatorsStore from "@/stores/operatorsStore";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import useGlobalStore from "@/stores/globalStore";
+import { set } from "react-hook-form";
 export function useGenerateKeys() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -18,7 +19,9 @@ export function useGenerateKeys() {
   );
   const { setError, setSuccess } = useGlobalStore();
 
-  const operatorIds = selectedOperators.map((operator) => operator.id);
+  let operatorIds = selectedOperators.map((operator) => operator.id);
+
+  operatorIds = operatorIds.sort((a, b) => a - b);
 
   let operatorsInfo = selectedOperators.map((operator) => {
     return {
@@ -27,6 +30,9 @@ export function useGenerateKeys() {
       public_key: operator.public_key,
     } as OperatorInfo;
   });
+
+  // sort the operatorsInfo array by id
+  operatorsInfo = operatorsInfo.sort((a, b) => a.id - b.id);
 
   const generateKeys = async (values: GenerateKeysForm) => {
     setIsLoading(true);
@@ -92,8 +98,18 @@ export function useGenerateKeys() {
 
       if (!response.ok) {
         // Handle HTTP errors
-        setError("HTTP error");
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        const errMessage = await response.text();
+        // check if the error message has the string "incorrect offset"
+        if (errMessage && errMessage.includes("incorrect offset")) {
+          const nMessage =
+            "One of the operators you selected runs an old version of the DKG client. Please select another operator.";
+          setError(nMessage);
+          throw new Error(nMessage);
+        } else {
+          throw new Error(
+            `HTTP error! Status: ${response.status} ${errMessage}`
+          );
+        }
       }
 
       const data = (await response.json()) as GenerateKeysResponse;
@@ -107,11 +123,16 @@ export function useGenerateKeys() {
       } catch (error) {
         setError("Error saving data to local storage");
       }
-      setSuccess("Keys generated successfully");
+      setSuccess(data.message);
       // redirect to the page that shows the generated keys
       router.push("/files");
     } catch (error) {
-      setError("Error generating keys");
+      type Error = {
+        message: string;
+      };
+      const nError = error as Error;
+      const nMessage = `Error: ${nError.message}`;
+      setError(nMessage);
     } finally {
       setIsLoading(false);
     }
