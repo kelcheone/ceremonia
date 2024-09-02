@@ -7,12 +7,17 @@ export default function useFetchInit() {
   const { chain } = useAccount();
   const [isLoading, setIsLoading] = useState(false);
   const setOperators = useOperatorsStore((state) => state.setOperators);
+  const searchTerm = useOperatorsStore((state) => state.searchTerm);
   let network = "mainnet";
   if (chain?.name === "Holesky") {
     network = "holesky";
   } else if (chain?.name === "Ethereum") {
     network = "mainnet";
   }
+
+  const concatSerchTerm = (searchTerm: string) => {
+    return searchTerm.replace(/ /g, "%20");
+  };
   const fetchInitOperators = async (
     filters: { verified: boolean; dkgEnabled: boolean } = {
       verified: false,
@@ -20,7 +25,9 @@ export default function useFetchInit() {
     }
   ) => {
     setIsLoading(true);
-    let url = `https://api.ssv.network/api/v4/${network}/operators?perPage=20`;
+    let url = `https://api.ssv.network/api/v4/${network}/operators?perPage=20&search=${concatSerchTerm(
+      searchTerm
+    )}`;
     if (filters.verified) {
       url += "&type=verified_operator";
     }

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { ConnectKitButton } from "connectkit";
 import { useAccount } from "wagmi";
+import Link from "next/link";
 const JoinCard = () => {
   const router = useRouter();
   const { isConnected } = useAccount();
@@ -28,13 +29,8 @@ const JoinCard = () => {
         </CardContent>
         <CardFooter className="flex justify-center items-center">
           {isConnected && (
-            <Button
-              className="font-bold text-lg"
-              onClick={() => {
-                router.push("/join/operators");
-              }}
-            >
-              Generate New Key Shares{" "}
+            <Button className="font-bold text-lg">
+              <Link href="/join/operators">Generate New Key Shares</Link>
             </Button>
           )}
           {!isConnected && <ConnectKitButton />}

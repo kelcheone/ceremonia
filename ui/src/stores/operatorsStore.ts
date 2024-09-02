@@ -12,6 +12,8 @@ type OperatorsStore = {
     verified: boolean;
   };
   isLoading: boolean;
+  searchTerm: string;
+  setSearchTerm: (searchTerm: string) => void;
 
   setOperators: (operators: Operator[]) => void;
   setSelectedOperators: (operators: Operator[]) => void;
@@ -29,6 +31,7 @@ const useOperatorsStore = create<OperatorsStore>((set, get) => ({
     verified: false,
   },
   isLoading: false,
+  searchTerm: "",
 
   setCurrentPage: (currentPage) => set({ currentPage }),
   // current operators + new operators
@@ -36,6 +39,7 @@ const useOperatorsStore = create<OperatorsStore>((set, get) => ({
   setSelectedOperators: (selectedOperators) => set({ selectedOperators }),
   setClusterSize: (clusterSize) => set({ clusterSize }),
   setFilters: (filters) => set({ filters }),
+  setSearchTerm: (searchTerm) => set({ searchTerm }),
 }));
 
 export default useOperatorsStore;

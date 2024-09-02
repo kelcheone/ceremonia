@@ -10,16 +10,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import useOperatorsStore from "@/stores/operatorsStore";
+import useFetchInit from "@/hooks/useFetchInit";
 
-type SearchAndFilterProps = {
-  searchTerm: string;
-  onSearchTermChange: (searchTerm: string) => void;
-};
+type SearchAndFilterProps = {};
 
-const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
-  searchTerm,
-  onSearchTermChange,
-}) => {
+const SearchAndFilter: React.FC<SearchAndFilterProps> = () => {
+  const searchTerm = useOperatorsStore((state) => state.searchTerm);
+  const setSearchTerm = useOperatorsStore((state) => state.setSearchTerm);
   const filters = useOperatorsStore((state) => state.filters);
   const setFilters = useOperatorsStore((state) => state.setFilters);
   const onFilterChange = (filterName: string) => {
@@ -29,6 +26,12 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
     if (filterName === "dkgEnabled") {
       setFilters({ ...filters, dkgEnabled: !filters.dkgEnabled });
     }
+  };
+  const { fetchInitOperators } = useFetchInit();
+
+  const onSearchTermChange = (searchTerm: string) => {
+    setSearchTerm(searchTerm);
+    fetchInitOperators(filters);
   };
 
   return (

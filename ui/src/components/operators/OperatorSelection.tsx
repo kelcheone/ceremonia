@@ -9,13 +9,11 @@ import useOperatorsStore from "@/stores/operatorsStore";
 import useFetchInit from "@/hooks/useFetchInit";
 
 export default function OperatorSelection() {
-  const operators = useOperatorsStore((state) => state.operators);
-  const setOperators = useOperatorsStore((state) => state.setOperators);
   const selectedOperators = useOperatorsStore(
-    (state) => state.selectedOperators,
+    (state) => state.selectedOperators
   );
   const setSelectedOperators = useOperatorsStore(
-    (state) => state.setSelectedOperators,
+    (state) => state.setSelectedOperators
   );
 
   const clusterSize = useOperatorsStore((state) => state.clusterSize);
@@ -45,10 +43,7 @@ export default function OperatorSelection() {
             clusterSize={clusterSize}
             onClusterSizeChange={handleClusterSizeChange}
           />
-          <SearchAndFilter
-            searchTerm={searchTerm}
-            onSearchTermChange={setSearchTerm}
-          />
+          <SearchAndFilter />
           <OperatorTable
             selectedOperators={selectedOperators}
             isLoading={isLoading}

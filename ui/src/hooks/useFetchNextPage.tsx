@@ -6,6 +6,7 @@ import { useAccount } from "wagmi";
 export default function useFetchNextPage() {
   const [isFetching, setIsFetching] = useState(false);
   const { chain } = useAccount();
+  const searchTerm = useOperatorsStore((state) => state.searchTerm);
   const filters = useOperatorsStore((state) => state.filters);
   const operators = useOperatorsStore((state) => state.operators);
   const setOperators = useOperatorsStore((state) => state.setOperators);
@@ -15,7 +16,14 @@ export default function useFetchNextPage() {
   } else if (chain?.name === "Ethereum") {
     network = "mainnet";
   }
-  let url = `https://api.ssv.network/api/v4/${network}/operators?perPage=20`;
+
+  const concatSerchTerm = (searchTerm: string) => {
+    return searchTerm.replace(/ /g, "%20");
+  };
+
+  let url = `https://api.ssv.network/api/v4/${network}/operators?perPage=20&search=${concatSerchTerm(
+    searchTerm
+  )}`;
 
   if (filters.verified) {
     url += "&type=verified_operator";
