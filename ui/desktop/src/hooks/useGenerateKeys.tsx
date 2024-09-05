@@ -76,9 +76,7 @@ export function useGenerateKeys() {
       return;
     }
 
-    // const DKG_HOST = import.meta.env.VITE_DKG_HOST;
-    // const VITE_DKG_HOST = 'https://dkg-api.kelche.co';
-    const VITE_DKG_HOST = 'http://localhost:8090';
+    const VITE_DKG_HOST = 'http://localhost:9126';
     const url = `${VITE_DKG_HOST}/api/run-dkg`;
 
     try {

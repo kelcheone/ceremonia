@@ -86,7 +86,7 @@ export default ({ command }: ConfigEnv): UserConfig => {
         target: 'esnext'
       },
       server: {
-        port: process.env.PORT === undefined ? 3000 : +process.env.PORT
+        port: process.env.PORT === undefined ? 3262 : +process.env.PORT
       },
       optimizeDeps: {
         exclude: ['path']
@@ -112,7 +112,7 @@ export default ({ command }: ConfigEnv): UserConfig => {
       rollupOptions: {}
     },
     server: {
-      port: process.env.PORT === undefined ? 3000 : +process.env.PORT
+      port: process.env.PORT === undefined ? 3262 : +process.env.PORT
     },
     optimizeDeps: {
       exclude: ['path']

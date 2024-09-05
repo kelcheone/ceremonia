@@ -25,7 +25,7 @@ function createWindow() {
     }
   });
 
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT || 3262;
   const url = isDev ? `http://localhost:${port}` : join(__dirname, '../dist-vite/index.html');
 
   // and load the index.html of the app.
@@ -35,7 +35,7 @@ function createWindow() {
     window?.loadFile(url);
   }
   // Open the DevTools.
-  window.webContents.openDevTools();
+  // window.webContents.openDevTools();
 
   window.webContents.setWindowOpenHandler(({ url: newUrl }) => {
     shell.openExternal(newUrl);
@@ -69,7 +69,7 @@ app.whenReady().then(() => {
   const binPath = path.join(process.resourcesPath, 'bin');
   const binaryPath = path.join(binPath, 'dkg-api');
   console.log(binaryPath);
-  serverProcess = spawn(binaryPath, ['local'], { cwd: binPath });
+  serverProcess = spawn(binaryPath, ['local', '9126'], { cwd: binPath });
   serverProcess.stdout.on('data', (data) => {
     console.log(`stdout: ${data}`);
   });

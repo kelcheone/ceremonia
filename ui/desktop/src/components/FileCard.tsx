@@ -19,9 +19,7 @@ interface FileCardProps {
 }
 
 const FileCard: React.FC<FileCardProps> = ({ sessionId, file, expiry, selectedOperators }) => {
-  // const DKG_HOST = import.meta.env.VITE_DKG_HOST;
-  // const VITE_DKG_HOST = 'https://dkg-api.kelche.co';
-  const VITE_DKG_HOST = 'http://localhost:8090';
+  const VITE_DKG_HOST = 'http://localhost:9126';
   const downloadUrl = `${VITE_DKG_HOST}/api/get-file/${sessionId}`;
   const [timeLeft, setTimeLeft] = useState<{
     days: number;
