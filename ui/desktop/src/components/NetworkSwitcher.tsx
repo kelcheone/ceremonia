@@ -33,7 +33,7 @@ export default function NetworkSwitcher() {
       localStorage.setItem('selectedChainId', chain.id.toString());
       fetchInitOperators();
     }
-  }, [chain, fetchInitOperators]);
+  }, [chain]);
 
   const handleNetworkSwitch = (selectedChain: Chain) => {
     setChain(selectedChain);

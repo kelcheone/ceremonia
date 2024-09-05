@@ -14,7 +14,6 @@ export default function OperatorSelection() {
 
   const clusterSize = useOperatorsStore((state) => state.clusterSize);
   const setClusterSize = useOperatorsStore((state) => state.setClusterSize);
-  const [searchTerm, setSearchTerm] = useState('');
 
   const { fetchInitOperators, isLoading } = useFetchInit();
   const filters = useOperatorsStore((state) => state.filters);
