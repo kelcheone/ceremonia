@@ -9,8 +9,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { FaDownload, FaGlobe, FaShieldAlt, FaUsers } from "react-icons/fa";
-import { Sparkles } from "lucide-react";
 import Link from "next/link";
+import { Player } from "@lottiefiles/react-lottie-player";
 
 export default function CeremoniaLandingPage() {
   interface FeatureCardProps {
@@ -89,7 +89,12 @@ export default function CeremoniaLandingPage() {
             className="flex items-center justify-center"
           >
             <div className="w-full h-64 bg-foreground/5 rounded-lg flex items-center justify-center">
-              <Sparkles className="w-32 h-32 text-primary" />
+              <Player
+                autoplay
+                loop
+                src="/distributed.json"
+                style={{ height: "50%", width: "50%" }}
+              />
             </div>
           </motion.div>
         </div>
