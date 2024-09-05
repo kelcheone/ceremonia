@@ -34,8 +34,9 @@ jobs:
       - name: Build Electron App
         run: make -C ui/desktop build
       - name: Build AppImage
-        run: make -C ui/desktop build-appimage
-
+        run: |
+          cd ui/desktop
+          yarn dist:linux
       - name: upload artifacts
         uses: actions/upload-artifact@v3
         with:
