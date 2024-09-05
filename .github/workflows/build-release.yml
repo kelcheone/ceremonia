@@ -50,6 +50,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
 
+    permissions: write-all
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
