@@ -89,3 +89,9 @@ build_dkg_api:
 
 .PHONY: all_dkg_api
 all_dkg_api: dkg_dependencies build_dkg_api
+
+
+.PHONY: dkg_linux
+dkg_linux:
+	cd $(SOURCE_CODE) && GOOS=linux GOARCH=amd64 go build -o ./bin/dkg-api main.go
+	@echo "Finished building the linux target binary"
