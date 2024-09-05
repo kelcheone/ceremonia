@@ -42,6 +42,7 @@ type DKGHandler struct {
 	SessionID   string
 	OutputDir   string
 	CommandArgs string
+	Env         string
 }
 
 func (d *DKGHandler) RunDKGHandler(w http.ResponseWriter, r *http.Request) {

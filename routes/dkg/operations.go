@@ -56,14 +56,18 @@ func (d *DKGHandler) constructArgs() error {
 		operatorIdsStr[i] = fmt.Sprintf("%d", id)
 	}
 	d.CommandArgs = fmt.Sprintf(
-		"--validators %d --operatorIDs %s --operatorsInfoPath %s --owner %s --nonce %d --withdrawAddress %s --network %s --outputPath %s --logLevel debug --logFormat json --logLevelFormat capitalColor --logFilePath ./initiator_logs/%s.log",
-		d.Req.Validators, strings.Join(operatorIdsStr, ","), operatorsPath, d.Req.OwnerAddr, d.Req.Nonce, d.Req.WithdrawAddr, d.Req.Network, d.OutputDir, d.SessionID,
 	)
 	return nil
 }
 
 func (d DKGHandler) RunCommand() error {
-	base := "ssv-dkg init"
+	var base string
+	if d.Env == "local" {
+		base = "./ssv-dkg init"
+	} else {
+		base = "ssv-dkg init"
+	}
+
 	command := fmt.Sprintf("%s %s", base, d.CommandArgs)
 	fmt.Println(command)
 	cmd := exec.Command("sh", "-c", command)
