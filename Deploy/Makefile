@@ -4,7 +4,7 @@ BINARY_NAME = ssv-dkg
 INSTALL_DIR = /usr/local/bin
 DOWNLOAD_DIR = /tmp
 GO_VERSION = 1.22.0
-SOURCE_CODE = ../ 
+SOURCE_CODE = ../
 #help
 
 .PHONY: help
@@ -21,7 +21,7 @@ help:
 	@echo "  uninstall_ssv_dkg  Uninstall the ssv-dkg binary"
 	@echo "  all_ssv_dkg  Download, install, test, and clean up the binary"
 	@echo "  all_dkg_api  Install Go, install dependencies, build the binary"
-	
+
 
 
 .PHONY: install_go
@@ -50,7 +50,7 @@ download:
 
 # Make the binary executable
 .PHONY: install_ssv_dkg
-install_ssv_dkg: 
+install_ssv_dkg:
 	@echo "Making $(BINARY_NAME) executable..."
 	@chmod +x $(DOWNLOAD_DIR)/$(BINARY_NAME)
 	@echo "Moving $(BINARY_NAME) to $(INSTALL_DIR)..."
@@ -77,13 +77,15 @@ uninstall_ssv_dkg:
 .PHONY: all_ssv_dkg
 all_ssv_dkg: download_ssv_dkg install_ssv_dkg test_ssv_dkg clean_ssv_dkg
 
+.PHONY: dkg_dependencies
+dkg_dependencies:
+	cd $(SOURCE_CODE) && go mod download
+	@echo "Dependencies downloaded"
 
-.PHONY: all_dkg_api
-all_dkg_api: install_go 
-	# cd into source code directory and install dependencies
-	cd $(SOURCE_CODE) && go mod download && go build -o ./bin/dkg-api main.go
+.PHONY: build_dkg_api
+build_dkg_api:
+	cd $(SOURCE_CODE) && go build -o ./bin/dkg-api main.go
 	@echo "Finished building the binary"
 
-
-
-
+.PHONY: all_dkg_api
+all_dkg_api: dkg_dependencies build_dkg_api
