@@ -9,7 +9,7 @@ import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { File, Folder } from "lucide-react";
+import { MonitorDown, Folder } from "lucide-react";
 import NetworkSwitcher from "./NetworkSwitcher";
 
 function NavBar() {
@@ -27,15 +27,17 @@ function NavBar() {
     href: string;
     children: React.ReactNode;
   }) => (
-    <Link
-      href={href}
-      className={`text-lg font-bold inline-block ${
-        isActive(href) ? "text-primary" : "text-muted-foreground"
-      } hover:text-primary transition-colors`}
-      onClick={() => setIsOpen(false)}
-    >
-      {children}
-    </Link>
+    <Button variant="outline" size="sm" className="flex  flex-row items-center">
+      <Link
+        href={href}
+        className={`text-lg inline-block ${
+          isActive(href) ? "text-primary" : "text-muted-foreground"
+        } hover:text-primary transition-colors`}
+        onClick={() => setIsOpen(false)}
+      >
+        {children}
+      </Link>
+    </Button>
   );
 
   const NavContent = () => (
@@ -53,7 +55,8 @@ function NavBar() {
   );
 
   return (
-    <nav className="flex justify-between items-center p-4 bg-primary-foreground">
+    // make the navbar sticky
+    <nav className="flex justify-between items-center px-4 py-1 bg-primary-foreground text-text shadow-md sticky top-0 z-10">
       <Link className="text-lg text-text font-bold flex items-center" href="/">
         <Image
           src="/images/ssv_logo.png"
@@ -64,6 +67,11 @@ function NavBar() {
         />
         Ceremonia
       </Link>
+
+      <NavLink href="/download">
+        <MonitorDown className="h-6 w-6 mr-2 inline-block" />
+        Download
+      </NavLink>
 
       {/* Desktop Navigation */}
       <div className="hidden md:flex items-center gap-6">
