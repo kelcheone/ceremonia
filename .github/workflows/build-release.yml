@@ -1,9 +1,9 @@
-name: Build and Release Ceremonia Desktop
+name: Build and Release Desktop App
 
 on:
   push:
     tags:
-      - "v*.*.*"
+      - "v*" # Trigger on version tag pushes (e.g., v1.0.0)
   workflow_dispatch:
 
 jobs:
@@ -14,35 +14,34 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install depencies
-        #   install curl and make
+      - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y curl make
 
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "20.10"
+          node-version: "16"
 
       - name: Install Yarn
         run: npm install -g yarn
 
-      - name: Download Binaries
-        run: make -C ui/desktop download-binaries
+      - name: Download binaries
+        run: make -C ui/desktop download-binaries # Specify the correct directory
 
-      - name: Install node_modules
+      - name: Install Node modules
         run: make -C ui/desktop install
 
-      - name: Build Electron App
+      - name: Build Electron app
         run: make -C ui/desktop build
+
       - name: Build AppImage
-        run: |
-          cd ui/desktop
-          yarn dist:linux
-      - name: upload artifacts
+        run: make -C ui/desktop build-appimage
+
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
           name: appimage
-          path: ui/desktop/dist/*.AppImage
+          path: ui/desktop/dist/*.AppImage # Adjust path if necessary
 
   release:
     needs: build
@@ -52,12 +51,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: appimage
-
-      - name: Create Release
+      - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -68,13 +62,10 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload Release Asset
-        id: upload-release-asset
+      - name: Upload AppImage to Release
         uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ui/desktop/dist/*.AppImage
-          asset_name: Ceremonia-Desktop-Linux-$(date +'%Y-%m-%d').AppImage
+          asset_path: ui/desktop/dist/*.AppImage # Path to the AppImage
+          asset_name: ceremonia.AppImage
           asset_content_type: application/octet-stream
