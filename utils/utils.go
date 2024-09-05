@@ -70,17 +70,26 @@ func GetTimeStamp() string {
 
 // DeleteFiles deletes the files in the output directory
 func DeleteFiles(sessionID string) error {
-	sourceDir := filepath.Join("output", sessionID)
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return fmt.Errorf("could not get user home directory: %s", err)
+	}
+
+	// sourceDir := filepath.Join("output", sessionID)
+	sourceDir := filepath.Join(homeDir, "ssv-dkg-files", "output", sessionID)
 	if err := os.RemoveAll(sourceDir); err != nil {
 		return fmt.Errorf("could not delete the output directory: %s", err)
 	}
 	// also the config fils
-	configDir := filepath.Join("config", sessionID)
+	// configDir := filepath.Join("config", sessionID)
+	configDir := filepath.Join(homeDir, "ssv-dkg-files", "config", sessionID)
 	if err := os.RemoveAll(configDir); err != nil {
 		return fmt.Errorf("could not delete the config directory: %s", err)
 	}
 	// remove the initiator log file "./initiator_logs/sessionID.log"
-	logFile := filepath.Join("initiator_logs", sessionID+".log")
+	// logFile := filepath.Join("initiator_logs", sessionID+".log")
+	initiatorLogsDir := filepath.Join(homeDir, "ssv-dkg-files", "initiator_logs")
+	logFile := filepath.Join(initiatorLogsDir, sessionID+".log")
 	if err := os.Remove(logFile); err != nil {
 		return fmt.Errorf("could not delete the log file: %s", err)
 	}

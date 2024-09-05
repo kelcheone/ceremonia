@@ -42,6 +42,7 @@ type DKGHandler struct {
 	SessionID   string
 	OutputDir   string
 	CommandArgs string
+	Env         string
 }
 
 func (d *DKGHandler) RunDKGHandler(w http.ResponseWriter, r *http.Request) {
@@ -52,20 +53,30 @@ func (d *DKGHandler) RunDKGHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	d.SessionID = uuid.New().String()
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		http.Error(w, "Could not get user home directory", http.StatusInternalServerError)
+		return
+	}
 
-	d.OutputDir = filepath.Join("output", d.SessionID)
+	// d.OutputDir = filepath.Join("output", d.SessionID)
+	d.OutputDir = filepath.Join(homeDir, "ssv-dkg-files", "output", d.SessionID)
 	if err := utils.Mkdir(d.OutputDir); err != nil {
+		fmt.Printf("%v\n", err)
 		http.Error(w, "Could not create outputDir directory", http.StatusInternalServerError)
 		return
 	}
 
-	if err := utils.Mkdir("initiator_logs"); err != nil {
+	initatorLogsDir := filepath.Join(homeDir, "ssv-dkg-files", "initiator_logs")
+
+	if err := utils.Mkdir(initatorLogsDir); err != nil {
 		http.Error(w, "Could not create outputDir directory", http.StatusInternalServerError)
 		return
 	}
 
 	// create sessionID's log file.
-	logFile := filepath.Join("initiator_logs", fmt.Sprintf("%s.log", d.SessionID))
+	// logFile := filepath.Join("initiator_logs", fmt.Sprintf("%s.log", d.SessionID))
+	logFile := filepath.Join(initatorLogsDir, fmt.Sprintf("%s.log", d.SessionID))
 	if _, err := os.Create(logFile); err != nil {
 		http.Error(w, "Could not create log file", http.StatusInternalServerError)
 		return
@@ -116,8 +127,19 @@ func (d *DKGHandler) ServeGeneratedFiles(w http.ResponseWriter, r *http.Request)
 	vars := mux.Vars(r)
 	sessionID := vars["sessionId"]
 
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		http.Error(w, "Could not get user home directory", http.StatusInternalServerError)
+		return
+	}
+
 	// we are to get return the zip file to the user
-	sourceDir := filepath.Join("output", sessionID)
+	// sourceDir := filepath.Join("output", sessionID)
+	sourceDir, err := filepath.Abs(filepath.Join(homeDir, "ssv-dkg-files", "output", sessionID))
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not get absolute path: %s", err), http.StatusInternalServerError)
+		return
+	}
 	ceremonyFiles, err := os.ReadDir(sourceDir)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("directory not found: %s", err), http.StatusNotFound)
@@ -165,6 +187,16 @@ func (d *DKGHandler) ServeGeneratedFiles(w http.ResponseWriter, r *http.Request)
 	}
 	// http.ServeFile(w, r, ceremonyZip)
 	// fmt.Printf("File %s was successfully downloaded by the client.\n", customFilename)
+}
+
+func (d DKGHandler) GetDKGVersion(w http.ResponseWriter, r *http.Request) {
+	version, err := d.RunVersionCommand()
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Could not get Version", http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(version)
 }
 
 func (d *DKGHandler) ScheduleFileDeletion(spawnTime time.Time) {
