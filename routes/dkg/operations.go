@@ -24,6 +24,7 @@ type (
 		Message    string   `json:"message"`
 	}
 )
+
 type LogMessage struct {
 	Level       string                 `json:"L"`
 	Timestamp   string                 `json:"T"`
@@ -43,8 +44,18 @@ type LogMessage struct {
 }
 
 func (d *DKGHandler) constructArgs() error {
-	configDir := filepath.Join("config", d.SessionID)
+	homdir, err := os.UserHomeDir()
+	if err != nil {
+		return fmt.Errorf("could not get user home directory")
+	}
+
+	// all ssv files will be stored in the ssv-dkg-files directory: output, config, initiator_logs
+	// d.OutputDir = filepath.Join(homdir, "ssv-dkg-files", "output", d.SessionID)
+
+	// configDir := filepath.Join("config", d.SessionID)p
+	configDir := filepath.Join(homdir, "ssv-dkg-files", "config", d.SessionID)
 	if err := utils.Mkdir(configDir); err != nil {
+		fmt.Printf("%v\n", err)
 		return fmt.Errorf("could not create config directory")
 	}
 	operatorsPath, err := writeToFile(configDir, d.Req.OperatorsInfo)
@@ -55,7 +66,10 @@ func (d *DKGHandler) constructArgs() error {
 	for i, id := range d.Req.OperatorIds {
 		operatorIdsStr[i] = fmt.Sprintf("%d", id)
 	}
+	logFilePath := filepath.Join(homdir, "ssv-dkg-files", "initiator_logs", fmt.Sprintf("%s.log", d.SessionID))
 	d.CommandArgs = fmt.Sprintf(
+		"--validators %d --operatorIDs %s --operatorsInfoPath %s --owner %s --nonce %d --withdrawAddress %s --network %s --outputPath %s --logLevel debug --logFormat json --logLevelFormat capitalColor --logFilePath %s",
+		d.Req.Validators, strings.Join(operatorIdsStr, ","), operatorsPath, d.Req.OwnerAddr, d.Req.Nonce, d.Req.WithdrawAddr, d.Req.Network, d.OutputDir, logFilePath,
 	)
 	return nil
 }
@@ -81,8 +95,46 @@ func (d DKGHandler) RunCommand() error {
 	return nil
 }
 
+type VersionResponse struct {
+	Version string `json:"version"`
+}
+
+func (d DKGHandler) RunVersionCommand() (*VersionResponse, error) {
+	var base string
+	if d.Env == "local" {
+		base = "./ssv-dkg -v"
+	} else {
+		base = "ssv-dkg -v"
+	}
+
+	cmd := exec.Command("sh", "-c", base)
+
+	out, err := cmd.Output()
+	if err != nil {
+		return nil, fmt.Errorf("could not run command: %s", err)
+	}
+	fmt.Println(base)
+
+	return &VersionResponse{
+			Version: strings.ReplaceAll(string(out), "\n", ""),
+		},
+		nil
+}
+
 func (d *DKGHandler) CheckLogs() (string, error) {
-	logFilePath := filepath.Join("initiator_logs", fmt.Sprintf("%s.log", d.SessionID))
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", fmt.Errorf("could not get user home directory")
+	}
+
+	// create the initiator_logs  if it does not exist
+	initiatorLogsDir := filepath.Join(homeDir, "ssv-dkg-files", "initiator_logs")
+	if err := utils.Mkdir(initiatorLogsDir); err != nil {
+		return "", fmt.Errorf("could not create initiator logs directory")
+	}
+
+	// logFilePath := filepath.Join("initiator_logs", fmt.Sprintf("%s.log", d.SessionID))
+	logFilePath := filepath.Join(initiatorLogsDir, fmt.Sprintf("%s.log", d.SessionID))
 	logFile, err := os.Open(logFilePath)
 	if err != nil {
 		return "", fmt.Errorf("could not open log file")
@@ -103,7 +155,6 @@ func (d *DKGHandler) CheckLogs() (string, error) {
 
 	var logMessage LogMessage
 	err = json.Unmarshal([]byte(lastLine), &logMessage)
-
 	if err != nil {
 		return "", fmt.Errorf("could not unmarshal log message")
 	}
@@ -135,7 +186,13 @@ func writeToFile(dir string, data []OperatorInfo) (string, error) {
 }
 
 func (d *DKGHandler) SaveFiles() (*RunDKGResponse, error) {
-	outputDir := filepath.Join("output", d.SessionID)
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return nil, fmt.Errorf("could not get user home directory")
+	}
+
+	// outputDir := filepath.Join("output", d.SessionID)
+	outputDir := filepath.Join(homeDir, "ssv-dkg-files", "output", d.SessionID)
 
 	ceremonyFiles, err := os.ReadDir(outputDir)
 	if err != nil {
