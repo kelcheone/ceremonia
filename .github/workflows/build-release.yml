@@ -1,0 +1,87 @@
+name: Build and Release Ceremonia Desktop
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install depencies
+        #   install curl and make
+        run: sudo apt-get update && sudo apt-get install -y curl make
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.10"
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Download Binaries
+        run: make -C ui/desktop download-binaries
+
+      - name: Install node_modules
+        run: make -C ui/desktop install
+
+      - name: Build Electron App
+        run: make -C ui/desktop build
+      - name: Build AppImage
+        run: make -C ui/desktop build-appimage
+
+      - name: List files in dist directory
+        run: ls -al ui/desktop/dist
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: appimage
+          path: ui/desktop/dist/*.AppImage
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions: write-all
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: appimage
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ui/desktop/dist/Ceremonia-1.0.0.AppImage
+          asset_name: Ceremonia-${{ github.ref_name }}.AppImage
+          asset_content_type: application/octet-stream
