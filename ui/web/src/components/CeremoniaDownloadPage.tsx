@@ -18,6 +18,13 @@ export default function CeremoniaDownloadPage() {
     );
   };
 
+  const downloadDmg = () => {
+    window.open(
+      "https://github.com/kelcheone/ceremonia/releases/download/main-mac/Ceremonia-Desktop-main-mac.dmg",
+      "_blank"
+    );
+  };
+
   interface DownloadCardProps {
     icon: React.ReactNode;
     title: string;
@@ -80,19 +87,23 @@ export default function CeremoniaDownloadPage() {
               </span>
             }
             onClick={downloadAppImage}
+          />{" "}
+          <DownloadCard
+            icon={<FaApple className="w-7 h-6" />}
+            title="macOS"
+            description=" Download the DMG for macOS Apple Silicon(M1++)"
+            buttonText={
+              <span className="flex items-center justify-center gap-2">
+                <FaDownload /> Download DMG
+              </span>
+            }
+            onClick={downloadDmg}
+            disabled={false}
           />
           <DownloadCard
             icon={<FaWindows className="w-6 h-6" />}
             title="Windows"
             description="Windows version coming soon"
-            buttonText="Coming Soon"
-            onClick={() => {}}
-            disabled={true}
-          />
-          <DownloadCard
-            icon={<FaApple className="w-6 h-6" />}
-            title="macOS"
-            description="macOS version coming soon"
             buttonText="Coming Soon"
             onClick={() => {}}
             disabled={true}
