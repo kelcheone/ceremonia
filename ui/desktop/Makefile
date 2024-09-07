@@ -2,6 +2,7 @@ SSV_DGK_BINARY_URL = https://github.com/kelcheone/ssv-dkg/releases/download/v2.1
 SERVER_BINARY_URL = https://github.com/kelcheone/ceremonia/releases/download/ceremonia-v1.0.0/dkg-api
 
 
+
 .PHONY: help
 help: ## Show this help message
 	@echo "Usage: make [target]"
