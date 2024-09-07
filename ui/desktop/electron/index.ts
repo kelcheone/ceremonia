@@ -20,6 +20,7 @@ function createWindow() {
     show: true,
     resizable: true,
     fullscreenable: true,
+    icon: join(__dirname, '../assets/icons/Icon-Electron.png'),
     webPreferences: {
       preload: join(__dirname, 'preload.js')
     }
@@ -65,6 +66,7 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 let serverProcess: ChildProcessWithoutNullStreams;
+/*
 app.whenReady().then(() => {
   const binPath = path.join(process.resourcesPath, 'bin');
   const binaryPath = path.join(binPath, 'dkg-api');
@@ -89,7 +91,32 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
+*/
+// for windows
+app.whenReady().then(() => {
+  const binPath = path.join(process.resourcesPath, 'bin');
+  const binaryPath = path.join(binPath, 'dkg-api.exe');
+  console.log(binaryPath);
+  serverProcess = spawn(binaryPath, ['local', '9126', 'windows'], { cwd: binPath });
+  serverProcess.stdout.on('data', (data) => {
+    console.log(`stdout: ${data}`);
+  });
 
+  serverProcess.stderr.on('data', (data) => {
+    console.error(`stderr: ${data}`);
+  });
+
+  serverProcess.on('close', (code) => {
+    console.log(`child process exited with code ${code}`);
+  });
+  createWindow();
+
+  app.on('activate', () => {
+    // On macOS it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
+});
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
