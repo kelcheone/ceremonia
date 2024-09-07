@@ -10,7 +10,7 @@ help: ## Show this help message
 	@echo "  install_yarn      Install yarn"
 	@echo "  install           Install node modules"
 	@echo "  build             Build the election app"
-	@echo "  build-windows	 Build the Windows executable"
+	@echo "  build-exe	 Build the Windows executable"
 
 .PHONY: download-binaries
 download-binaries: ## Download binaries
@@ -30,7 +30,7 @@ install: ## Install node modules
 build: ## Build the election app
 	yarn build
 
-.PHONY: build-windows
-build-windows: ## Build the Windows executable
+.PHONY: build-exe
+build-exe: ## Build the Windows executable
 	yarn dist:win
 
