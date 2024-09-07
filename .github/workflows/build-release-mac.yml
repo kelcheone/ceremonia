@@ -42,3 +42,48 @@ jobs:
 
       - name: List files in dist directory
         run: ls -al ui/desktop/dist
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dmg
+          path: ui/desktop/dist/*.dmg
+
+  release:
+    needs: build
+    runs-on: macos-latest
+
+    permissions: write-all
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: dmg
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}-mac
+          release_name: Release ${{ github.ref_name }} for Mac
+          body: |
+            Changes in this Release
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ui/desktop/dist/*.dmg
+          asset_name: Ceremonia-Desktop-${{ github.ref_name }}-mac.dmg
+          asset_content_type: application/x-diskcopy
