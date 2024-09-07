@@ -10,7 +10,7 @@ help: ## Show this help message
 	@echo "  install_yarn      Install yarn"
 	@echo "  install           Install node modules"
 	@echo "  build             Build the election app"
-	@echo " build-macOS	 Build the macOS executable"
+	@echo " build-dmg         Build the macOS executable"
 
 .PHONY: download-binaries
 download-binaries: ## Download binaries
@@ -34,7 +34,7 @@ install: ## Install node modules
 build: ## Build the election app
 	yarn build
 
-.PHONY: build-macOS
-build-macOS: ## Build the macOS executable
+.PHONY: build-dmg
+build-dmg: ## Build the macOS executable
 	yarn dist:mac
 

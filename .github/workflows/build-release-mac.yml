@@ -38,7 +38,7 @@ jobs:
         run: make -C ui/desktop  -f mac.mk build
 
       - name: Build DMG
-        run: make -C ui/desktop  -f mac.mk build-macOs
+        run: make -C ui/desktop  -f mac.mk build-dmg
 
       - name: List files in dist directory
         run: ls -al ui/desktop/dist
