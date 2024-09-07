@@ -95,3 +95,17 @@ all_dkg_api: dkg_dependencies build_dkg_api
 dkg_linux:
 	cd $(SOURCE_CODE) && GOOS=linux GOARCH=amd64 go build -o ./bin/dkg-api main.go
 	@echo "Finished building the linux target binary"
+
+.PHONY: dkg_windows
+dkg_windows:
+	cd $(SOURCE_CODE) && GOOS=windows GOARCH=amd64 go build -o ./bin/dkg-api.exe main.go
+	@echo "Finished building the windows target binary"
+
+.PHONY: dkg_mac
+dkg_mac:
+	cd $(SOURCE_CODE) && GOOS=darwin GOARCH=amd64 go build -o ./bin/dkg-api-mac main.go
+	@echo "Finished building the mac target binary"
+
+.PHONY: dkg_all
+dkg_all: dkg_linux dkg_windows dkg_mac
+	@echo "Finished building all target binaries"
