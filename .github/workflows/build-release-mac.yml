@@ -47,7 +47,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: dmg
-          path: ui/desktop/dist/*.dmg
+          path: ui/desktop/dist/Ceremonia-1.0.0-arm64.dmg
 
   release:
     needs: build
@@ -84,6 +84,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ui/desktop/dist/*.dmg
+          asset_path: ui/desktop/dist/Ceremonia-1.0.0-arm64.dmg
           asset_name: Ceremonia-Desktop-${{ github.ref_name }}-mac.dmg
           asset_content_type: application/x-diskcopy
