@@ -1,4 +1,4 @@
-name: Build and Release Ceremonia Desktop for Mac
+name: Ceremonia Desktop for Mac
 
 on:
   push:
