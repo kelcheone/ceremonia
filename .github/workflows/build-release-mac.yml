@@ -1,0 +1,44 @@
+name: Build and Release Ceremonia Desktop for Mac
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v
+
+      - name: Install depencies
+        run: brew install curl make
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.10"
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Download Binaries
+        run: make -C ui/desktop  -f mac.mk download-binaries
+
+      - name: Install node_modules
+        run: make -C ui/desktop  -f mac.mk install
+
+      - name: Build Electron App
+        run: make -C ui/desktop  -f mac.mk build
+
+      - name: Build DMG
+        run: make -C ui/desktop  -f mac.mk build-macOs
+
+      - name: List files in dist directory
+        run: ls -al ui/desktop/dist
