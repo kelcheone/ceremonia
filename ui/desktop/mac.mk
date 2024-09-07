@@ -17,8 +17,8 @@ download-binaries: ## Download binaries
 	mkdir -p bin
 	curl -L $(SSV_DGK_BINARY_URL) -o bin/ssv-dkg
 	curl -L $(SERVER_BINARY_URL) -o bin/dkg-api
-	chmod +x bin/ssv-dkg-darwin
-	chmod +x bin/dkg-api-darwin
+	chmod +x bin/ssv-dkg
+	chmod +x bin/dkg-api
 
 .PHONY: install_yarn
 install_yarn: ## Install yarn
