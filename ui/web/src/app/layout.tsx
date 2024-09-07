@@ -28,6 +28,11 @@ export default function RootLayout({
           {typeof metadata.title === "string" ? metadata.title : ""}
         </title>
       </Head>
+      <script
+        defer
+        data-domain="ceremonia.kelche.co"
+        src="https://plausible.kelche.co/js/script.js"
+      ></script>
       <body data-theme="dark" className={inter.className}>
         <Web3Provider>
           <ThemeProvider
