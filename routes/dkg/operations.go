@@ -78,8 +78,14 @@ func (d DKGHandler) RunCommand() error {
 	var base string
 	if d.Env == "local" {
 		base = "./ssv-dkg init"
+		if d.Platform == "windows" {
+			base = "./ssv-dkg.exe init"
+		}
 	} else {
 		base = "ssv-dkg init"
+		if d.Platform == "windows" {
+			base = "ssv-dkg.exe init"
+		}
 	}
 
 	command := fmt.Sprintf("%s %s", base, d.CommandArgs)
@@ -103,8 +109,14 @@ func (d DKGHandler) RunVersionCommand() (*VersionResponse, error) {
 	var base string
 	if d.Env == "local" {
 		base = "./ssv-dkg -v"
+		if d.Platform == "windows" {
+			base = "./ssv-dkg.exe -v"
+		}
 	} else {
 		base = "ssv-dkg -v"
+		if d.Platform == "windows" {
+			base = "ssv-dkg.exe -v"
+		}
 	}
 
 	cmd := exec.Command("sh", "-c", base)

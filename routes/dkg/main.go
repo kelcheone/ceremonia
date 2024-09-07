@@ -43,6 +43,7 @@ type DKGHandler struct {
 	OutputDir   string
 	CommandArgs string
 	Env         string
+	Platform    string
 }
 
 func (d *DKGHandler) RunDKGHandler(w http.ResponseWriter, r *http.Request) {

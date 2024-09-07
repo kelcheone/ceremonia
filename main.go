@@ -13,8 +13,9 @@ import (
 )
 
 var (
-	env  = "prod"
-	port = "8090"
+	env      = "prod"
+	port     = "8090"
+	Platform string
 )
 
 func init() {
@@ -29,25 +30,30 @@ func init() {
 		port = args[2]
 	}
 
+	if len(args) >= 4 {
+		Platform = args[3]
+	}
+
 	fmt.Println(env)
 	fmt.Println(port)
+	fmt.Println(Platform)
 }
 
 func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/api/run-dkg", func(w http.ResponseWriter, r *http.Request) {
-		handler := &dkgHandler.DKGHandler{Env: env}
+		handler := &dkgHandler.DKGHandler{Env: env, Platform: Platform}
 		handler.RunDKGHandler(w, r)
 	}).Methods("POST")
 
 	r.HandleFunc("/api/get-file/{sessionId}", func(w http.ResponseWriter, r *http.Request) {
-		handler := &dkgHandler.DKGHandler{Env: env}
+		handler := &dkgHandler.DKGHandler{Env: env, Platform: Platform}
 		handler.ServeGeneratedFiles(w, r)
 	}).Methods("GET")
 
 	r.HandleFunc("/api/dkg-version", func(w http.ResponseWriter, r *http.Request) {
-		handler := &dkgHandler.DKGHandler{Env: env}
+		handler := &dkgHandler.DKGHandler{Env: env, Platform: Platform}
 		handler.GetDKGVersion(w, r)
 	}).Methods("GET")
 
