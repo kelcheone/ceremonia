@@ -64,6 +64,9 @@ jobs:
         with:
           name: dmg
 
+      - name: List files in dist directory
+        run: ls -al
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
