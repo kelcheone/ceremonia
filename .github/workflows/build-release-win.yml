@@ -1,0 +1,50 @@
+name: Ceremonia Desktop for Windows
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install depencies
+        run: sudo apt-get update && sudo apt-get install -y curl make
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.10"
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Download Binaries
+        run: make -C ui/desktop  -f windows.mk download-binaries
+
+      - name: Install node_modules
+        run: make -C ui/desktop  -f windows.mk install
+
+      - name: Build Electron App
+        run: make -C ui/desktop  -f windows.mk build
+
+      - name: Build Executable
+        run: make -C ui/desktop  -f windows.mk build-exe
+
+      - name: List files in dist directory
+        run: ls -al ui/desktop/dist
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: exe
+          path: ui/desktop/dist/Ceremonia-1.0.0.exe
