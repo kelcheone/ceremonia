@@ -31,6 +31,9 @@ jobs:
       - name: Download Binaries
         run: make -C ui/desktop  -f windows.mk download-binaries
 
+      - name: List files in bin directory
+        run: ls -al ui/desktop/bin
+
       - name: Install node_modules
         run: make -C ui/desktop  -f windows.mk install
 
