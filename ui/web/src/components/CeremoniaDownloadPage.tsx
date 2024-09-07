@@ -25,13 +25,6 @@ export default function CeremoniaDownloadPage() {
     );
   };
 
-  const downloadWindows = () => {
-    window.open(
-      "https://github.com/kelcheone/ceremonia/releases/download/main/Ceremonia.Setup.1.0.0.exe",
-      "_blank"
-    );
-  };
-
   interface DownloadCardProps {
     icon: React.ReactNode;
     title: string;
@@ -110,14 +103,10 @@ export default function CeremoniaDownloadPage() {
           <DownloadCard
             icon={<FaWindows className="w-6 h-6" />}
             title="Windows"
-            description="Windows Installer"
-            buttonText={
-              <span className="flex items-center justify-center gap-2">
-                <FaDownload /> Download Windows
-              </span>
-            }
-            onClick={downloadWindows}
-            disabled={false}
+            description="Windows version coming soon"
+            buttonText="Coming Soon"
+            onClick={() => {}}
+            disabled={true}
           />
         </div>
 
@@ -132,7 +121,7 @@ export default function CeremoniaDownloadPage() {
             <li className="mb-2">✨ Seamless decentralized ceremonies</li>
             <li className="mb-2">🔒 Enhanced security and privacy</li>
             <li className="mb-2">🚀 Optimized for performance</li>
-            <li>🌐 Cross-platform compatibility</li>
+            <li>🌐 Cross-platform compatibility (coming soon)</li>
           </ul>
         </motion.div>
       </div>
