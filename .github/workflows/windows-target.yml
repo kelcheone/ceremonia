@@ -36,7 +36,7 @@ jobs:
         run: go build -o Ceremonia.exe .
 
       - name: List files in directory
-        run: ls -al
+        run: Get-ChildItem -Path .\ -Recurse
 
       - name: Run the app
         run: .\Ceremonia.exe local 8090 windows
