@@ -119,6 +119,8 @@ func (d DKGHandler) RunVersionCommand() (*VersionResponse, error) {
 		}
 	}
 
+	fmt.Println(base)
+
 	cmd := exec.Command("sh", "-c", base)
 
 	out, err := cmd.Output()

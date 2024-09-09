@@ -42,6 +42,16 @@ func init() {
 func main() {
 	r := mux.NewRouter()
 
+	fmt.Println("-------------------The app is now running-------------------")
+	func() {
+		handler := &dkgHandler.DKGHandler{Env: env, Platform: Platform}
+		version, err := handler.RunVersionCommand()
+		if err != nil {
+			fmt.Println("Error getting version: ", err)
+		}
+		fmt.Printf("Version: %+v\n", version.Version)
+	}()
+
 	r.HandleFunc("/api/run-dkg", func(w http.ResponseWriter, r *http.Request) {
 		handler := &dkgHandler.DKGHandler{Env: env, Platform: Platform}
 		handler.RunDKGHandler(w, r)

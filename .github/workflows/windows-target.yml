@@ -1,0 +1,37 @@
+name: fix windows target build
+
+on:
+  push:
+    branches:
+      - fix-windows-target
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SSV_DKG_URL: "https://github.com/kelcheone/ssv-dkg/releases/download/v2.1.0-24-windows/ssv-dkg-windows.exe"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      #  Get download the ssv-dkg windows binary using curl
+      - name: Download SSVDKG Binaries
+        run: curl  -L -o ssv-dkg-windows.exe ${{ env.SSV_DKG_URL }}
+
+      # Set up Go.
+      - name: Set up Go 1.17
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.22
+          cache: "go-build"
+
+        # Install depencies
+      - name: Install depencies
+        run: go mod download
+
+      - name: Run the app.
+        run: go run . local 9126 windows
