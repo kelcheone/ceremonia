@@ -20,7 +20,7 @@ jobs:
 
       #  Get download the ssv-dkg windows binary using curl
       - name: Download SSVDKG Binaries
-        run: curl  -L -o ssv-dkg-windows.exe ${{ env.SSV_DKG_URL }}
+        run: curl  -L -o ssv-dkg.exe ${{ env.SSV_DKG_URL }}
 
       # Set up Go.
       - name: Set up Go
