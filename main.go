@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
@@ -81,5 +80,6 @@ func main() {
 	gHandler := c.Handler(r)
 
 	fmt.Printf("Running server on port %s\n", port)
-	log.Fatal(http.ListenAndServe(":"+port, gHandler))
+	// log.Fatal(http.ListenAndServe(":"+port, gHandler))
+	_ = gHandler
 }
