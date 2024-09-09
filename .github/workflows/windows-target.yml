@@ -32,5 +32,11 @@ jobs:
       - name: Install depencies
         run: go mod download
 
-      - name: Run the app.
-        run: go run . local 9126 windows
+      - name: build the app
+        run: go build -o Ceremonia.exe .
+
+      - name: List files in directory
+        run: ls -al
+
+      - name: Run the app
+        run: .\Ceremonia.exe local 8090 windows
