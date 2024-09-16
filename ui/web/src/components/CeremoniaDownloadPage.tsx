@@ -25,6 +25,12 @@ export default function CeremoniaDownloadPage() {
     );
   };
 
+  const dowloadWindowsInstaller = () => {
+    window.open(
+      "https://github.com/kelcheone/ceremonia/releases/download/main/Ceremonia.Setup.1.0.0.exe",
+      "_blank"
+    );
+
   interface DownloadCardProps {
     icon: React.ReactNode;
     title: string;
@@ -104,9 +110,13 @@ export default function CeremoniaDownloadPage() {
             icon={<FaWindows className="w-6 h-6" />}
             title="Windows"
             description="Windows is not supported yet"
-            buttonText="Coming Soon"
-            onClick={() => {}}
-            disabled={true}
+            buttonText={
+              <span className="flex items-center justify-center gap-2">
+                <FaDownload /> Download Installer
+              </span>
+            }
+            onClick={dowloadWindowsInstaller}
+            disabled={false}
           />
         </div>
 
