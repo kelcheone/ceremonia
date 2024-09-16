@@ -6,6 +6,8 @@ import { File, Folder } from 'lucide-react';
 import SwitchDarkMode from '@/SwitchDarkMode';
 import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 import NetworkSwitcher from './NetworkSwitcher';
+import useOperatorsStore from '@/stores/operatorsStore';
+import { Operator } from '@/types/types';
 
 type NavigateParams = {
   path: string;
@@ -22,6 +24,8 @@ const NavBar: FC<NavBarProps> = ({ params }) => {
   const isActive = (path: string) => {
     return true;
   };
+
+  const setSelectedOperators = useOperatorsStore((state) => state.setSelectedOperators);
 
   const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
     <Link
@@ -62,7 +66,11 @@ const NavBar: FC<NavBarProps> = ({ params }) => {
             <ArrowLeft className="h-4 w-4" />
           </Button>
         )}
-        <Link to="/">
+        <Link to="/"
+        onClick={()=>{
+          setSelectedOperators([] as Operator[]);
+        }}
+        >
           <Home className="h-8 w-8" />
         </Link>
         {/* Desktop Navigation */}

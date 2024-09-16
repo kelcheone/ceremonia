@@ -19,7 +19,7 @@ const chains: Chain[] = [
 
 export default function NetworkSwitcher() {
   const { toast } = useToast();
-  const [chain, setChain] = useState<Chain>();
+  const [chain, setChain] = useState<Chain | null>(null);
   const { fetchInitOperators } = useFetchInit();
 
   useEffect(() => {
@@ -31,9 +31,9 @@ export default function NetworkSwitcher() {
   useEffect(() => {
     if (chain) {
       localStorage.setItem('selectedChainId', chain.id.toString());
-      fetchInitOperators();
+      fetchInitOperators(); 
     }
-  }, [chain]);
+  }, [chain, fetchInitOperators]);
 
   const handleNetworkSwitch = (selectedChain: Chain) => {
     setChain(selectedChain);
@@ -41,8 +41,6 @@ export default function NetworkSwitcher() {
       title: 'Network Changed',
       description: `Switched to ${selectedChain.name}`
     });
-
-    fetchInitOperators();
   };
 
   if (!chain) return null;

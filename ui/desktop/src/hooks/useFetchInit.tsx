@@ -1,6 +1,6 @@
 import useOperatorsStore from '@/stores/operatorsStore';
 import { chains, Operator } from '@/types/types';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 export default function useFetchInit() {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,36 +19,37 @@ export default function useFetchInit() {
   const concatSerchTerm = (searchTerm: string) => {
     return searchTerm.replace(/ /g, '%20');
   };
-  const fetchInitOperators = async (
-    filters: { verified: boolean; dkgEnabled: boolean } = {
-      verified: false,
-      dkgEnabled: false
-    }
-  ) => {
-    setIsLoading(true);
-    let url = `https://api.ssv.network/api/v4/${network}/operators?perPage=20&search=${concatSerchTerm(searchTerm)}`;
-    if (filters.verified) {
-      url += '&type=verified_operator';
-    }
-    if (filters.dkgEnabled) {
-      url += '&has_dkg_address=true';
-    }
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-      const operators = data.operators as Operator[];
-      operators.forEach((operator) => {
-        operator.fee = (parseFloat(operator.fee) / 1e12).toFixed(2);
-      });
-      // if ip is http:// not https:// remove the operator
-      const filteredOperators = operators.filter((operator) => !operator.dkg_address.startsWith('http://'));
 
-      setOperators(filteredOperators);
-      setIsLoading(false);
-      return filteredOperators;
-    } catch (error) {
-      throw new Error('Error fetching operators');
-    }
-  };
+  const fetchInitOperators = useCallback(
+    async (filters: { verified: boolean; dkgEnabled: boolean } = { verified: false, dkgEnabled: false }) => {
+      setIsLoading(true);
+      let url = `https://api.ssv.network/api/v4/${network}/operators?perPage=20&search=${concatSerchTerm(searchTerm)}`;
+      if (filters.verified) {
+        url += '&type=verified_operator';
+      }
+      if (filters.dkgEnabled) {
+        url += '&has_dkg_address=true';
+      }
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const operators = data.operators as Operator[];
+        operators.forEach((operator) => {
+          operator.fee = (parseFloat(operator.fee) / 1e12).toFixed(2);
+        });
+        // Filter out operators with `http://` DKG addresses
+        const filteredOperators = operators.filter((operator) => !operator.dkg_address.startsWith('http://'));
+
+        setOperators(filteredOperators);
+        setIsLoading(false);
+        return filteredOperators;
+      } catch (error) {
+        setIsLoading(false);
+        throw new Error('Error fetching operators');
+      }
+    },
+    [network, searchTerm, setOperators] // Memoize based on network and searchTerm
+  );
+
   return { fetchInitOperators, isLoading };
 }
