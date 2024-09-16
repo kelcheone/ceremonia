@@ -20,7 +20,6 @@ function createWindow() {
     show: true,
     resizable: true,
     fullscreenable: true,
-    icon: join(__dirname, '../assets/icons/Icon-Electron.png'),
     webPreferences: {
       preload: join(__dirname, 'preload.js')
     }
