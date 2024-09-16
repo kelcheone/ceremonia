@@ -25,11 +25,15 @@ export default function CeremoniaDownloadPage() {
     );
   };
 
+
   const dowloadWindowsInstaller = () => {
     window.open(
       "https://github.com/kelcheone/ceremonia/releases/download/main/Ceremonia.Setup.1.0.0.exe",
       "_blank"
     );
+
+  }
+
 
   interface DownloadCardProps {
     icon: React.ReactNode;
